@@ -1,6 +1,8 @@
-# Active MetalLB in Kubernetes
+# Activate MetalLB in your Kubernetes Cluster
 
-This repo explains how to activate [MetalLB](https://metallb.universe.tf/)MetalLB in a Kubernetes cluster created with kubeadm.
+This repo explains how to activate [MetalLB](https://metallb.universe.tf/) in a Kubernetes cluster created with kubeadm.
+
+## Installation
 
 1. Install MetalLB: Begin by installing MetalLB on your cluster. You can use *kubectl* to apply the MetalLB manifest from its GitHub repository
 ```bash
@@ -23,11 +25,12 @@ data:
       - <YOUR_DESIRED_IP_RANGE>
 ```
 Replace *<YOUR_DESIRED_IP_RANGE>* with the IP range you want MetalLB to assign services from. For example, you can use a range within your local network, such as *192.168.0.100-192.168.0.200*. Save the file.
+
 3. Apply the configuration:
 ```bash
 kubectl apply -f config.yaml
 ```
-4. Verify installation: Check the installation and configuration by running the following command:
+4. Verify the installation: Check the installation and configuration by running the following command:
 ```bash
 kubectl get pods -n metallb-system
 ```
