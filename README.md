@@ -1,36 +1,47 @@
-# Activate MetalLB in your Kubernetes Cluster
+# Enable MetalLB in Kubernetes
 
-This repo explains how to activate [MetalLB](https://metallb.universe.tf/) in a Kubernetes cluster created with kubeadm.
+This guide shows how to install and configure [MetalLB](https://metallb.universe.tf/), a load-balancer implementation for bare metal Kubernetes clusters.
 
-## Installation
+## What is MetalLB?
 
-1. Install MetalLB: Begin by installing MetalLB on your cluster. You can use *kubectl* to apply the MetalLB manifest from its GitHub repository
-```bash
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.10.2/manifests/namespace.yaml
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.10.2/manifests/metallb.yaml
-```
-2. Configure MetalLB: After installing MetalLB, you need to configure it with the appropriate address pool. Create a *config.yaml* file using your preferred text editor:
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  namespace: metallb-system
-  name: config
-data:
-  config: |
-    address-pools:
-    - name: default
-      protocol: layer2
-      addresses:
-      - <YOUR_DESIRED_IP_RANGE>
-```
-Replace *<YOUR_DESIRED_IP_RANGE>* with the IP range you want MetalLB to assign services from. For example, you can use a range within your local network, such as *192.168.0.100-192.168.0.200*. Save the file.
+MetalLB provides external IPs for services in environments without a cloud provider. It assigns IPs from a specified range and handles traffic using standard protocols (Layer 2 or BGP).
 
-3. Apply the configuration:
-```bash
-kubectl apply -f config.yaml
-```
-4. Verify the installation: Check the installation and configuration by running the following command:
-```bash
-kubectl get pods -n metallb-system
-```
+## Installation Steps
+
+1. **Install MetalLB components:**
+   Apply the official MetalLB manifests to create the required namespace and controller components.
+   ```bash
+   kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.10.2/manifests/namespace.yaml
+   kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.10.2/manifests/metallb.yaml
+   ```
+
+2. **Create MetalLB ConfigMap:**
+   Define the IP address pool MetalLB will use. Replace the example range with one from your local network.
+   ```yaml
+   # config.yaml
+   apiVersion: v1
+   kind: ConfigMap
+   metadata:
+     namespace: metallb-system
+     name: config
+   data:
+     config: |
+       address-pools:
+       - name: default
+         protocol: layer2
+         addresses:
+         - 192.168.0.100-192.168.0.200
+   ```
+
+3. **Apply the configuration:**
+   ```bash
+   kubectl apply -f config.yaml
+   ```
+
+4. **Verify the installation:**
+   Ensure the MetalLB components are running correctly.
+   ```bash
+   kubectl get pods -n metallb-system
+   ```
+
+Once configured, any `LoadBalancer`-type service will be assigned an external IP from the defined range.
